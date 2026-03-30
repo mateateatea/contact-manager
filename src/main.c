@@ -3,3 +3,7 @@
 #include "io.h"
 #include "ui.h"
 #include "validation.h"
+
+int main(){
+    return 0;
+}
