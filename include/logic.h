@@ -2,7 +2,7 @@
 #define LOGIC_H
 #include "structs.h"
 
-int contact_add(struct ContactArray *arr, struct Contact c);
+int contact_add(struct ContactArray *arr);
 int contact_delete(struct ContactArray *arr, int index);
 int contact_edit(struct ContactArray *arr, int index, struct Contact new_data);
 void contact_sort(struct ContactArray *arr);
