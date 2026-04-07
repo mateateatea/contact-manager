@@ -21,14 +21,17 @@ int contact_add(struct ContactArray *arr)
     printf("Podaj adres e-mail: ");
     scanf("%99s", nowy->email);
     printf("Podaj adres zamieszkania: ");
-    scanf("%199s", nowy->address);
+    getchar();
+    fgets(nowy->address, sizeof(nowy->address), stdin);
+
     printf("Dodaj notatke (opcjonalne): ");
-    scanf("%499s", nowy->note);
-    printf("\n");
+    fgets(nowy->note, sizeof(nowy->note), stdin);
 
     nowy -> date_added = time(NULL);
 
     arr -> size++;
 
-    printf("Kontakt został dodany!");
+    printf("Kontakt został dodany!\n");
+
+    return 1;
 }
