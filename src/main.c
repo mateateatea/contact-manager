@@ -5,8 +5,12 @@
 #include "io.h"
 #include "ui.h"
 #include "validation.h"
+#include <windows.h>
 
 int main(){
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
     struct ContactArray moja_ksiazka;
     
     moja_ksiazka.size = 0;
@@ -21,6 +25,8 @@ int main(){
     }
 
     contact_add(&moja_ksiazka);
+
+    zapisDoPliku(&moja_ksiazka, "src/contacts.csv");
 
     free(moja_ksiazka.data);
     
