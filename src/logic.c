@@ -14,7 +14,7 @@ int contact_add(struct ContactArray *arr)
             return 0;
         }
         arr->data = tmp;
-       arr->capacity = arr->capacity * 2;
+        arr->capacity = arr->capacity * 2;
     }
 
     struct Contact *nowy = &arr->data[arr->size];
