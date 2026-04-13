@@ -4,6 +4,8 @@
 #include "structs.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <ctype.h>
 
 int contact_add(struct ContactArray *arr)
 {   
@@ -24,7 +26,43 @@ int contact_add(struct ContactArray *arr)
     printf("Enter your surname: ");
     scanf("%49s", nowy->last_name);
     printf("Enter your phone number: ");
-    scanf("%9s", nowy->phone);
+    char tel[9];
+    bool isValid;
+    while (1)
+    {
+        fgets(nowy->phone, sizeof(nowy->phone), stdin);
+
+        if (nowy->phone != NULL)
+        {
+            nowy->phone[strcspn(nowy->phone, "\n")] = 0;
+
+            if (strlen(nowy->phone) == 0)
+            {
+                continue;
+            }
+            
+            isValid = true;
+
+            for (int i = 0; nowy->phone[i] != '\0'; i++)
+            {
+                if (!isdigit(nowy->phone[i]))
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+
+            if (isValid)
+            {
+                break;
+            }
+            else
+            {
+                printf("Wpisz tylko cyfry!\n");
+            }
+        }
+    }
+    
     printf("Enter your e-mail: ");
     scanf("%99s", nowy->email);
     getchar();
@@ -56,9 +94,4 @@ int contact_array_init(struct ContactArray *arr)
         return 0;
     }
     return 1;
-}
-
-void contact_show(struct ContactArray *arr)
-{
-    
 }
