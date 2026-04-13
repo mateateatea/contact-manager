@@ -25,14 +25,16 @@ int contact_add(struct ContactArray *arr)
     scanf("%49s", nowy->first_name);
     printf("Enter your surname: ");
     scanf("%49s", nowy->last_name);
+
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
     printf("Enter your phone number: ");
     char tel[9];
     bool isValid;
     while (1)
     {
-        fgets(nowy->phone, sizeof(nowy->phone), stdin);
-
-        if (nowy->phone != NULL)
+        if (fgets(nowy->phone, sizeof(nowy->phone), stdin) != NULL)
         {
             nowy->phone[strcspn(nowy->phone, "\n")] = 0;
 
@@ -64,8 +66,29 @@ int contact_add(struct ContactArray *arr)
     }
     
     printf("Enter your e-mail: ");
-    scanf("%99s", nowy->email);
-    getchar();
+    
+    while (1)
+    {
+        if (fgets(nowy->email, sizeof(nowy->email), stdin) != NULL)
+        {
+            nowy->email[strcspn(nowy->email, "\n")] = 0;
+
+            if(strlen(nowy->email) == 0)
+            {
+                continue;
+            }
+
+            if (strchr(nowy->email, '@') != NULL)
+            {
+                break;
+            }
+            else
+            {
+            printf("Wrong email adress format! Try again!\n");;
+            }
+        }
+    }
+
     printf("Enter your home addres: ");
     
     fgets(nowy->address, sizeof(nowy->address), stdin);
