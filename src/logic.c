@@ -33,7 +33,7 @@ int contact_add(struct ContactArray *arr)
     fgets(nowy->address, sizeof(nowy->address), stdin);
     nowy->address[strcspn(nowy->address, "\n")] = 0;
 
-    printf("Dodaj notatke (opcjonalne): ");
+    printf("Add note (optional): ");
     fgets(nowy->note, sizeof(nowy->note), stdin);
     nowy->note[strcspn(nowy->note, "\n")] = 0;
 
@@ -46,7 +46,8 @@ int contact_add(struct ContactArray *arr)
     return 1;
 }
 
-int contact_array_init(struct ContactArray *arr){
+int contact_array_init(struct ContactArray *arr)
+{
     arr->size = 0;
     arr->capacity = INITIAL_CAPACITY;
     arr->data = malloc(arr->capacity * sizeof(struct Contact));
@@ -55,4 +56,9 @@ int contact_array_init(struct ContactArray *arr){
         return 0;
     }
     return 1;
+}
+
+void contact_show(struct ContactArray *arr)
+{
+    
 }

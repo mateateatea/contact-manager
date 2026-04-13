@@ -5,7 +5,7 @@
 
 void zapisDoPliku(struct ContactArray *arr, const char* nazwa_pliku)
 {
-    FILE *plik = fopen(nazwa_pliku, "w");
+    FILE *plik = fopen(nazwa_pliku, "a");
 
     if (plik == NULL)
     {
@@ -35,5 +35,5 @@ void zapisDoPliku(struct ContactArray *arr, const char* nazwa_pliku)
 
     fclose(plik);
 
-    printf("Dane zostały zapisane do pliku %s\n", nazwa_pliku);
+    printf("Data have been added to file %s\n", nazwa_pliku);
 }
