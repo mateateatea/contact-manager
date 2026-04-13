@@ -3,26 +3,33 @@
 #include "logic.h"
 #include "structs.h"
 #include <string.h>
+#include <stdlib.h>
 
 int contact_add(struct ContactArray *arr)
-{
-    if (arr->size >= arr->capacity) {
-        printf("Brak miejsca! Tablica jest pelna.\n");
-        return 0; 
+{   
+    if (arr->size >= arr->capacity){
+        struct Contact *tmp = realloc(arr->data, arr->capacity * 2 * sizeof(struct Contact));
+        if (tmp == NULL){
+            printf("Memory allocation error!\n");
+            return 0;
+        }
+        arr->data = tmp;
+       arr->capacity = arr->capacity * 2;
     }
 
     struct Contact *nowy = &arr->data[arr->size];
 
-    printf("Podaj imie: ");
+    printf("Enter your name: ");
     scanf("%49s", nowy->first_name);
-    printf("Podaj nazwisko: ");
+    printf("Enter your surname: ");
     scanf("%49s", nowy->last_name);
-    printf("Podaj nr telefonu: ");
+    printf("Enter your phone number: ");
     scanf("%9s", nowy->phone);
-    printf("Podaj adres e-mail: ");
+    printf("Enter your e-mail: ");
     scanf("%99s", nowy->email);
-    printf("Podaj adres zamieszkania: ");
     getchar();
+    printf("Enter your home addres: ");
+    
     fgets(nowy->address, sizeof(nowy->address), stdin);
     nowy->address[strcspn(nowy->address, "\n")] = 0;
 
@@ -34,42 +41,18 @@ int contact_add(struct ContactArray *arr)
 
     arr -> size++;
 
-    printf("Kontakt został dodany!\n");
+    printf("The contact has been added!\n");
 
     return 1;
 }
 
-void zapisDoPliku(struct ContactArray *arr, const char* nazwa_pliku)
-{
-    FILE *plik = fopen(nazwa_pliku, "w");
+int contact_array_init(struct ContactArray *arr){
+    arr->size = 0;
+    arr->capacity = INITIAL_CAPACITY;
+    arr->data = malloc(arr->capacity * sizeof(struct Contact));
 
-    if (plik == NULL)
-    {
-        printf("Błąd: nie można otworzyć pliku %s\n", nazwa_pliku);
-        return;
+    if (arr->data == NULL){
+        return 0;
     }
-
-    for (int i = 0; i < arr->size; i++)
-    {
-        struct Contact *k = &arr->data[i];
-
-        struct tm *czas_info = localtime(&k->date_added);
-        char sformatowana_data[20];
-        
-        strftime(sformatowana_data, sizeof(sformatowana_data), "%Y-%m-%d %H:%M", czas_info);
-        
-
-        fprintf(plik, "%s,%s,%s,%s,%s,%s,%s\n",
-            k->first_name,
-            k->last_name,
-            k->phone,
-            k->email,
-            k->address,
-            k->note,
-            sformatowana_data);
-    }
-
-    fclose(plik);
-
-    printf("Dane zostały zapisane do pliku %s\n", nazwa_pliku);
+    return 1;
 }

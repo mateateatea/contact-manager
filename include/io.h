@@ -4,6 +4,6 @@
 #include "logic.h"
 #include "structs.h"
 
-
+void zapisDoPliku(struct ContactArray *arr, const char* nazwa_pliku);
 
 #endif
