@@ -7,6 +7,25 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+void fillIt(char *buffer, size_t buffer_size)
+{
+    while (1)
+    {
+        if (fgets(buffer, buffer_size, stdin) != NULL)
+        {
+            buffer[strcspn(buffer, "\n")] = 0;
+
+            if (strlen(buffer) == 0)
+            {
+                printf("You must fill it!\n");
+                continue;
+            }
+
+            break;
+        }
+    }
+}
+
 int contact_add(struct ContactArray *arr)
 {   
     if (arr->size >= arr->capacity){
@@ -21,13 +40,14 @@ int contact_add(struct ContactArray *arr)
 
     struct Contact *nowy = &arr->data[arr->size];
 
-    printf("Enter your name: ");
-    scanf("%49s", nowy->first_name);
-    printf("Enter your surname: ");
-    scanf("%49s", nowy->last_name);
+    int a;
+    while ((a = getchar()) != '\n' && a != EOF);
 
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    printf("Enter your name: ");
+    fillIt(nowy->first_name, sizeof(nowy->first_name));
+
+    printf("Enter your surname: ");
+    fillIt(nowy->last_name, sizeof(nowy->last_name));
 
     printf("Enter your phone number: ");
     char tel[9];
@@ -40,6 +60,7 @@ int contact_add(struct ContactArray *arr)
 
             if (strlen(nowy->phone) == 0)
             {
+                printf("You must fill the phone number!\n");
                 continue;
             }
             
@@ -90,9 +111,7 @@ int contact_add(struct ContactArray *arr)
     }
 
     printf("Enter your home addres: ");
-    
-    fgets(nowy->address, sizeof(nowy->address), stdin);
-    nowy->address[strcspn(nowy->address, "\n")] = 0;
+    fillIt(nowy->address, sizeof(nowy->address));
 
     printf("Add note (optional): ");
     fgets(nowy->note, sizeof(nowy->note), stdin);
