@@ -139,44 +139,140 @@ int contact_array_init(struct ContactArray *arr)
     return 1;
 }
 
-void contact_show()
+char* get_csv_field(char **line_ptr)
 {
-    FILE* plik = fopen("src/contacts.csv", "r");
-    if (!plik)
+    if (*line_ptr == NULL) return NULL;
+    
+    char *start = *line_ptr;
+    char *comma = strchr(start, ',');
+    
+    if (comma)
     {
-        printf("File not found!");
+        *comma = '\0';
+        *line_ptr = comma + 1;
     }
     else
     {
-        char linie[MAX_LINE_LENGTH];
+        *line_ptr = NULL;
+    }
+    return start;
+}
 
-        int row = 0;
-        int column = 0;
+void contact_load(struct ContactArray *arr, const char *filename)
+{
+    FILE *plik = fopen(filename, "r");
+    if (!plik)
+    {
+        printf("Błąd otwierania pliku!\n");
+        return;
+    }
 
+    char linie[MAX_LINE_LENGTH];
+    int row = 0;
 
-        while(fgets(linie, sizeof(linie), plik))
+    while (fgets(linie, sizeof(linie), plik))
+    {
+        row++;
+        if (row == 1) continue;
+
+        linie[strcspn(linie, "\n")] = 0;
+
+        if (arr->size >= arr->capacity)
         {
-            row++;
-            column = 0;
-            
-            if (row == 1)
+            struct Contact *tmp = realloc(arr->data, arr->capacity * 2 * sizeof(struct Contact));
+            if (tmp == NULL)
             {
-                printf("First name, Last name, phone number, email address, home address, note, date\n");
-                
+                printf("Memory allocation error!");
+                fclose(plik);
+                return;
             }
-            else
-            {
-                char *token = strtok(linie, ",");
-                while (token != NULL)
-                {
-                    printf("%-10s", token);
+            arr->data = tmp;
+            arr->capacity *= 2;
+        }
 
-                    token = strtok(NULL, ",");
-                }
-                printf("\n");
-                
+        struct Contact *nowy = &arr->data[arr->size];
+
+        char *ptr = linie;
+
+        char *token = get_csv_field(&ptr);
+        if (token) strcpy(nowy->first_name, token);
+
+        token = get_csv_field(&ptr);
+        if (token) strcpy(nowy->last_name, token);
+
+        token = get_csv_field(&ptr);
+        if (token) strcpy(nowy->phone, token);
+
+        token = get_csv_field(&ptr);
+        if (token) strcpy(nowy->email, token);
+
+        token = get_csv_field(&ptr);
+        if (token) strcpy(nowy->address, token);
+
+        token = get_csv_field(&ptr);
+        if (token) strcpy(nowy->note, token);
+
+        token = get_csv_field(&ptr);
+        if (token) 
+        {
+            struct tm tm_date = {0};
+            int year, month, day, hour, minute;
+            if (sscanf(token, "%d-%d-%d %d:%d", &year, &month, &day, &hour, &minute) == 5) 
+            {
+                tm_date.tm_year = year - 1900;
+                tm_date.tm_mon = month - 1;
+                tm_date.tm_mday = day;
+                tm_date.tm_hour = hour;
+                tm_date.tm_min = minute;
+                nowy->date_added = mktime(&tm_date);
+            } 
+            else 
+            {
+                nowy->date_added = 0;
             }
         }
-        fclose(plik);
+
+        arr->size++;
     }
+    fclose(plik);
+    printf("Loaded %d contacts from file.\n", arr->size);
+}
+
+void contact_show(struct ContactArray *arr)
+{
+    if (arr->size == 0)
+    {
+        printf("The contact book is empty.\n");
+        return;
+    }
+
+    printf("\n----CONTACT BOOK----\n");
+    for (int i = 0; i < arr->size; i++)
+    {
+        struct Contact *c = &arr->data[i];
+
+        char date_buf[20];
+        struct tm *timeinfo = localtime(&c->date_added);
+        if (timeinfo != NULL) {
+            strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M", timeinfo);
+        } else {
+            strcpy(date_buf, "Unknown date");
+        }
+
+        printf("[%d] %s %s %s %s %s %s %s\n", 
+               i, 
+               c->first_name, 
+               c->last_name, 
+               c->phone, 
+               c->email, 
+               c->address, 
+               c->note, 
+               date_buf);
+    }
+    printf("----------\n");
+}
+
+void contact_delete(struct ContactArray *arr, int index)
+{
+    return;
 }

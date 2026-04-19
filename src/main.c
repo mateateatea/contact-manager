@@ -18,7 +18,6 @@ int main(){
     #endif
 
     struct ContactArray my_book;
-    contact_array_init(&my_book);
 
    if (contact_array_init(&my_book) == 0)
     { 
@@ -26,22 +25,40 @@ int main(){
         return 1;
     }
 
-    int choice;
+    contact_load(&my_book, "src/contacts.csv");
 
-    printf("What do you want to do?\n");
-    printf("[0] Add contact\n");
-    printf("[1] Show contacts\n");
-    scanf("%d", &choice);
+    int working = 1;
 
-    if (choice == 0)
+    while (working)
     {
-        contact_add(&my_book);
+        int choice;
 
-        zapisDoPliku(&my_book, "src/contacts.csv");
-    }
-    if (choice == 1)
-    {
-        contact_show();
+        printf("What do you want to do?\n");
+        printf("[1] Add contact\n");
+        printf("[2] Show contacts\n");
+        printf("[3] Exit\n");
+        printf("Choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1:
+            contact_add(&my_book);
+            zapisDoPliku(&my_book, "src/contacts.csv");
+            break;
+
+        case 2:
+            contact_show(&my_book);
+            break;
+
+        case 3:
+            working = 0;
+            break;
+        
+        default:
+            printf("Invalid choice!");
+            break;
+        }
     }
 
     free(my_book.data);
