@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#define MAX_LINE_LENGTH 1024
+
 void fillIt(char *buffer, size_t buffer_size)
 {
     while (1)
@@ -50,7 +52,6 @@ int contact_add(struct ContactArray *arr)
     fillIt(nowy->last_name, sizeof(nowy->last_name));
 
     printf("Enter your phone number: ");
-    char tel[9];
     bool isValid;
     while (1)
     {
@@ -136,4 +137,46 @@ int contact_array_init(struct ContactArray *arr)
         return 0;
     }
     return 1;
+}
+
+void contact_show()
+{
+    FILE* plik = fopen("src/contacts.csv", "r");
+    if (!plik)
+    {
+        printf("File not found!");
+    }
+    else
+    {
+        char linie[MAX_LINE_LENGTH];
+
+        int row = 0;
+        int column = 0;
+
+
+        while(fgets(linie, sizeof(linie), plik))
+        {
+            row++;
+            column = 0;
+            
+            if (row == 1)
+            {
+                printf("First name, Last name, phone number, email address, home address, note, date\n");
+                
+            }
+            else
+            {
+                char *token = strtok(linie, ",");
+                while (token != NULL)
+                {
+                    printf("%-10s", token);
+
+                    token = strtok(NULL, ",");
+                }
+                printf("\n");
+                
+            }
+        }
+        fclose(plik);
+    }
 }

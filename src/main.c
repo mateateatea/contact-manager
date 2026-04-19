@@ -39,6 +39,10 @@ int main(){
 
         zapisDoPliku(&my_book, "src/contacts.csv");
     }
+    if (choice == 1)
+    {
+        contact_show();
+    }
 
     free(my_book.data);
     
