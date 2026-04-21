@@ -36,7 +36,9 @@ int main(){
         printf("What do you want to do?\n");
         printf("[1] Add contact\n");
         printf("[2] Show contacts\n");
-        printf("[3] Exit\n");
+        printf("[3] Delete contact\n");
+        printf("[4] Edit contact\n");
+        printf("[5] Exit\n");
         printf("Choice: ");
         scanf("%d", &choice);
 
@@ -52,6 +54,16 @@ int main(){
             break;
 
         case 3:
+            contact_delete(&my_book);
+            zapisDoPliku(&my_book, "src/contacts.csv");
+            break;
+
+        case 4:
+            contact_edit(&my_book);
+            zapisDoPliku(&my_book, "src/contacts.csv");
+            break;
+
+        case 5:
             working = 0;
             break;
         
