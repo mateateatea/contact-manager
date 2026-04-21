@@ -28,6 +28,29 @@ void fillIt(char *buffer, size_t buffer_size)
     }
 }
 
+void get_valid_phone(char *buffer, size_t size) {
+    bool isValid;
+    while (1) {
+        if (fgets(buffer, size, stdin) != NULL) {
+            buffer[strcspn(buffer, "\n")] = 0;
+            if (strlen(buffer) == 0) {
+                printf("You must fill the phone number!\n");
+                continue;
+            }
+            
+            isValid = true;
+            for (int i = 0; buffer[i] != '\0'; i++) {
+                if (!isdigit(buffer[i])) {
+                    isValid = false;
+                    break;
+                }
+            }
+            if (isValid) break;
+            else printf("Type only numbers!\n");
+        }
+    }
+}
+
 int contact_add(struct ContactArray *arr)
 {   
     if (arr->size >= arr->capacity){
@@ -52,40 +75,7 @@ int contact_add(struct ContactArray *arr)
     fillIt(nowy->last_name, sizeof(nowy->last_name));
 
     printf("Enter your phone number: ");
-    bool isValid;
-    while (1)
-    {
-        if (fgets(nowy->phone, sizeof(nowy->phone), stdin) != NULL)
-        {
-            nowy->phone[strcspn(nowy->phone, "\n")] = 0;
-
-            if (strlen(nowy->phone) == 0)
-            {
-                printf("You must fill the phone number!\n");
-                continue;
-            }
-            
-            isValid = true;
-
-            for (int i = 0; nowy->phone[i] != '\0'; i++)
-            {
-                if (!isdigit(nowy->phone[i]))
-                {
-                    isValid = false;
-                    break;
-                }
-            }
-
-            if (isValid)
-            {
-                break;
-            }
-            else
-            {
-                printf("Wpisz tylko cyfry!\n");
-            }
-        }
-    }
+    get_valid_phone(nowy->phone, sizeof(nowy->phone));
     
     printf("Enter your e-mail: ");
     
@@ -359,40 +349,7 @@ void contact_edit(struct ContactArray *arr)
             fillIt(c->last_name, sizeof(c->last_name));
 
             printf("Enter phone number: ");
-            bool isValid2;
-            while (1)
-            {
-                if (fgets(c->phone, sizeof(c->phone), stdin) != NULL)
-                {
-                    c->phone[strcspn(c->phone, "\n")] = 0;
-
-                    if (strlen(c->phone) == 0)
-                    {
-                        printf("You must fill the phone number!\n");
-                        continue;
-                    }
-                    
-                    isValid2 = true;
-
-                    for (int i = 0; c->phone[i] != '\0'; i++)
-                    {
-                        if (!isdigit(c->phone[i]))
-                        {
-                            isValid2 = false;
-                            break;
-                        }
-                    }
-
-                    if (isValid2)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        printf("Type only numbers!\n");
-                    }
-                }
-            }
+            get_valid_phone(c->phone, sizeof(c->phone));
             
             printf("Enter an e-mail: ");
             
@@ -443,40 +400,7 @@ void contact_edit(struct ContactArray *arr)
 
         case 4:
             printf("Change phone number: ");
-            bool isValid;
-            while (1)
-            {
-                if (fgets(c->phone, sizeof(c->phone), stdin) != NULL)
-                {
-                    c->phone[strcspn(c->phone, "\n")] = 0;
-
-                    if (strlen(c->phone) == 0)
-                    {
-                        printf("You must fill the phone number!\n");
-                        continue;
-                    }
-                    
-                    isValid = true;
-
-                    for (int i = 0; c->phone[i] != '\0'; i++)
-                    {
-                        if (!isdigit(c->phone[i]))
-                        {
-                            isValid = false;
-                            break;
-                        }
-                    }
-
-                    if (isValid)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        printf("Type only numbers!\n");
-                    }
-                }
-            }
+            get_valid_phone(c->phone, sizeof(c->phone));
             break;
 
         case 5:
