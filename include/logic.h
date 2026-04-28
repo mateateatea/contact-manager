@@ -11,5 +11,5 @@ void contact_show(struct ContactArray *arr);
 void zapisDoPliku(struct ContactArray *arr, const char* nazwa_pliku);
 int contact_array_init(struct ContactArray *arr);
 void contact_load(struct ContactArray *arr, const char *filename);
-
+void handle_contact_search(struct ContactArray *arr);
 #endif

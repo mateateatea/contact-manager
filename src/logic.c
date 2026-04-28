@@ -472,3 +472,41 @@ void contact_edit(struct ContactArray *arr)
             break;
     }
 }
+
+int contact_search(struct ContactArray *arr, char *first_name, char *last_name){
+    if (arr == NULL || arr->data == NULL){
+        return -1;
+    }
+
+    for (int i = 0; i < arr->size; i++){
+        if (strcmp(arr->data[i].first_name, first_name) == 0 &&
+            strcmp(arr->data[i].last_name, last_name) == 0) {
+                return i;
+            }
+    }
+    return -1;
+}
+
+void handle_contact_search(struct ContactArray *arr){
+    char first[50];
+    char last[50];
+
+    printf("Enter the name you're looking for: \n");
+    scanf("%49s", first);
+    printf("Enter the surname you're looking for: \n");
+    scanf("%49s", last);
+
+    int index = contact_search(arr, first ,last);
+
+    if (index != -1){
+        printf("\n=== ZNALEZIONO KONTAKT ===\n");
+        printf("Name:     %s\n", arr->data[index].first_name);
+        printf("Surname: %s\n", arr->data[index].last_name);
+        printf("Phone number:  %s\n", arr->data[index].phone);
+        printf("Email:    %s\n", arr->data[index].email);
+        printf("Address:    %s\n", arr->data[index].address);
+        printf("Note:  %s\n", arr->data[index].note);
+    }else{
+        printf("There is no such contact!\n");
+    }
+}
