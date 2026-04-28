@@ -153,7 +153,7 @@ void contact_load(struct ContactArray *arr, const char *filename)
     FILE *plik = fopen(filename, "r");
     if (!plik)
     {
-        printf("Błąd otwierania pliku!\n");
+        printf("FILE OPENING ERROR!\n");
         return;
     }
 
@@ -499,7 +499,7 @@ void handle_contact_search(struct ContactArray *arr){
     int index = contact_search(arr, first ,last);
 
     if (index != -1){
-        printf("\n=== ZNALEZIONO KONTAKT ===\n");
+        printf("\n=== CONTACT FOUND ===\n");
         printf("Name:     %s\n", arr->data[index].first_name);
         printf("Surname: %s\n", arr->data[index].last_name);
         printf("Phone number:  %s\n", arr->data[index].phone);
