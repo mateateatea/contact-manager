@@ -289,6 +289,33 @@ void contact_delete(struct ContactArray *arr)
     printf("Contact deleted succesfully!\n");
 }
 
+int comparison_alphabetic(const void *a, const void *b)
+{
+    const struct Contact *contactA = (const struct Contact *)a;
+    const struct Contact *contactB = (const struct Contact *)b;
+
+    int name_cmp = strcmp(contactA->last_name, contactB->last_name);
+
+    if (name_cmp == 0)
+    {
+        return strcmp(contactA->first_name, contactB->first_name);
+    }
+
+    return name_cmp;
+}
+
+void contact_sort(struct ContactArray *arr)
+{
+    if (arr->size <= 1)
+    {
+        return;
+    }
+
+    qsort(arr->data, arr->size, sizeof(struct Contact), comparison_alphabetic);
+
+    printf("Contacts sorted!");
+}
+ 
 void contact_edit(struct ContactArray *arr)
 {
     int i;

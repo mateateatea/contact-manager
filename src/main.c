@@ -38,7 +38,8 @@ int main(){
         printf("[2] Show contacts\n");
         printf("[3] Delete contact\n");
         printf("[4] Edit contact\n");
-        printf("[5] Exit\n");
+        printf("[5] Sort contacts\n");
+        printf("[6] Exit\n");
         printf("Choice: ");
         scanf("%d", &choice);
 
@@ -64,6 +65,11 @@ int main(){
             break;
 
         case 5:
+            contact_sort(&my_book);
+            contact_show(&my_book);
+            break;
+
+        case 6:
             working = 0;
             break;
         
