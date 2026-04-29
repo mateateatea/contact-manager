@@ -1,5 +1,5 @@
 #ifdef _WIN32
-    #include <windows.h>
+#include <windows.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +29,11 @@ int main(){
 
     int working = 1;
 
-    while (working)
+    int USE_GUI = 1;
+    if (USE_GUI == 1){
+        start_gui(&my_book);
+    }else{
+        while (working)
     {
         int choice;
 
@@ -82,6 +86,9 @@ int main(){
             break;
         }
     }
+    }
+
+    
 
     free(my_book.data);
     
