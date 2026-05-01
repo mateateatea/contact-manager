@@ -1,4 +1,4 @@
-FILES = src/main.c src/logic.c src/io.c src/ui.c src/validation.c
+FILES = src/main.c src/logic.c src/io.c src/ui.c src/validation.c src/logic_gui.c
 CC = gcc
 CFLAGS = -Wall -Wextra -I include -I raylib/include
 LDFLAGS = -L raylib/lib
