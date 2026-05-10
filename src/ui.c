@@ -7,7 +7,10 @@
 
 // Rozbudowane stany focusu (dla wszystkich 6 pól)
 typedef enum { EKRAN_LISTY, EKRAN_DODAWANIA } StanAplikacji;
-typedef enum { FOCUS_NONE, FOCUS_FNAME, FOCUS_LNAME, FOCUS_PHONE, FOCUS_EMAIL, FOCUS_CITY, FOCUS_NOTE } FocusState;
+typedef enum { FOCUS_NONE, FOCUS_FNAME, FOCUS_LNAME, FOCUS_PHONE, FOCUS_EMAIL, FOCUS_CITY, FOCUS_NOTE, FOCUS_SEARCH } FocusState;
+
+// ... (w start_gui obok innych buforów):
+char buf_search[50] = {0}; // Bufor na tekst z wyszukiwarki
 
 void start_gui(struct ContactArray *my_book) {
     InitWindow(800, 600, "Contact Manager");
@@ -37,32 +40,38 @@ void start_gui(struct ContactArray *my_book) {
     while (!WindowShouldClose()) {
         
         // --- LOGIKA WPISYWANIA Z KLAWIATURY ---
-        if (stan == EKRAN_DODAWANIA) {
-            char *active_buf = NULL;
-            size_t max_len = 0; // Używamy size_t, żeby nie było warningu od kompilatora
+        // --- LOGIKA WPISYWANIA Z KLAWIATURY ---
+        char *active_buf = NULL;
+        size_t max_len = 0;
 
+        // Określamy, gdzie aktualnie pisze użytkownik
+        if (stan == EKRAN_DODAWANIA) {
             if (focus == FOCUS_FNAME) { active_buf = buf_fname; max_len = 49; }
             else if (focus == FOCUS_LNAME) { active_buf = buf_lname; max_len = 49; }
             else if (focus == FOCUS_PHONE) { active_buf = buf_phone; max_len = 19; }
             else if (focus == FOCUS_EMAIL) { active_buf = buf_email; max_len = 49; }
             else if (focus == FOCUS_CITY)  { active_buf = buf_city; max_len = 49; }
             else if (focus == FOCUS_NOTE)  { active_buf = buf_note; max_len = 99; }
+        } else if (stan == EKRAN_LISTY) {
+            // NOWE: Pozwalamy pisać na ekranie głównym
+            if (focus == FOCUS_SEARCH) { active_buf = buf_search; max_len = 49; }
+        }
 
-            if (active_buf != NULL) {
-                int key = GetCharPressed();
-                while (key > 0) {
-                    if ((key >= 32) && (key <= 125) && (strlen(active_buf) < max_len)) {
-                        size_t len = strlen(active_buf);
-                        active_buf[len] = (char)key;
-                        active_buf[len + 1] = '\0';
-                    }
-                    key = GetCharPressed(); 
-                }
-
-                if (IsKeyPressed(KEY_BACKSPACE)) {
+        // Łapanie klawiszy (ten sam kod co miałeś)
+        if (active_buf != NULL) {
+            int key = GetCharPressed();
+            while (key > 0) {
+                if ((key >= 32) && (key <= 125) && (strlen(active_buf) < max_len)) {
                     size_t len = strlen(active_buf);
-                    if (len > 0) active_buf[len - 1] = '\0';
+                    active_buf[len] = (char)key;
+                    active_buf[len + 1] = '\0';
                 }
+                key = GetCharPressed(); 
+            }
+
+            if (IsKeyPressed(KEY_BACKSPACE)) {
+                size_t len = strlen(active_buf);
+                if (len > 0) active_buf[len - 1] = '\0';
             }
         }
 
@@ -73,53 +82,90 @@ void start_gui(struct ContactArray *my_book) {
         if (stan == EKRAN_LISTY) {
             DrawTextEx(myFont, "Twoje Kontakty", (Vector2){40, 30}, 36, 1, primaryColor);
 
+            // --- NOWE: RYSOWANIE PASKA WYSZUKIWANIA ---
+            Rectangle rec_search = { 320, 30, 220, 40 }; // Obok tytułu
+            DrawRectangleRec(rec_search, cardColor);
+            DrawRectangleLinesEx(rec_search, 2, (focus == FOCUS_SEARCH) ? primaryColor : LIGHTGRAY);
+            
+            // Wyświetlanie placeholdera (szarego "Szukaj...") lub wpisanego tekstu
+            if (strlen(buf_search) == 0 && focus != FOCUS_SEARCH) {
+                DrawTextEx(myFont, "Szukaj...", (Vector2){rec_search.x + 10, rec_search.y + 10}, 20, 1, GRAY);
+            } else {
+                DrawTextEx(myFont, buf_search, (Vector2){rec_search.x + 10, rec_search.y + 10}, 20, 1, textColor);
+            }
+
             Rectangle btnAdd = { 560, 30, 200, 40 };
             DrawRectangleRounded(btnAdd, 0.2f, 10, primaryColor);
             DrawTextEx(myFont, "+ Dodaj Kontakt", (Vector2){btnAdd.x + 15, btnAdd.y + 10}, 20, 1, WHITE);
 
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), btnAdd)) {
-                stan = EKRAN_DODAWANIA;
-                error_msg[0] = '\0'; 
+            // --- NOWE: KLIKANIE W PASEK WYSZUKIWANIA ---
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                Vector2 mouse = GetMousePosition();
+                if (CheckCollisionPointRec(mouse, btnAdd)) {
+                    stan = EKRAN_DODAWANIA;
+                    error_msg[0] = '\0'; 
+                } else if (CheckCollisionPointRec(mouse, rec_search)) {
+                    focus = FOCUS_SEARCH;
+                } else {
+                    focus = FOCUS_NONE; // Odznacza się, jeśli klikniesz w tło
+                }
             }
 
             int startY = 90;       
-            int cardHeight = 110;  // Zwiększone ze 80 na 110, by pomieścić więcej tekstu
+            int cardHeight = 110;  
             int spacing = 15;      
 
-            // --- OBSŁUGA SCROLLOWANIA ---
-            scroll_y += GetMouseWheelMove() * 30.0f; // Szybkość scrolla
-            
-            // Ograniczenia: blokada przewijania w kosmos (góra/dół)
+            scroll_y += GetMouseWheelMove() * 30.0f; 
             if (scroll_y > 0) scroll_y = 0; 
             int total_height = my_book->size * (cardHeight + spacing);
             int max_scroll = 600 - startY - total_height;
-            if (max_scroll > 0) max_scroll = 0; // Jeśli mało kontaktów, brak scrolla
+            if (max_scroll > 0) max_scroll = 0; 
             if (scroll_y < max_scroll) scroll_y = max_scroll;
 
-            // Uruchamiamy maskowanie: kafelki będą rysowane TYLKO w tym oknie
-            // Dzięki temu podczas scrollowania znikają pod górnym nagłówkiem
             BeginScissorMode(0, startY, 800, 600 - startY);
 
+            // Zmienna trzymająca ilość AKTUALNIE narysowanych, widocznych kontaktów
+            int drawn_count = 0; 
+
             for (int i = 0; i < my_book->size; i++) {
-                // Obliczamy pozycję z uwzględnieniem przewijania
-                int currentY = startY + (int)scroll_y + (i * (cardHeight + spacing));
                 
-                // Optymalizacja: nie rysujemy kafelków, których i tak nie widać
-                if (currentY + cardHeight < startY) continue; 
+                // --- NOWE: LOGIKA WYSZUKIWANIA ---
+                if (strlen(buf_search) > 0) {
+                    // Robimy kopię małych liter wpisanego tekstu
+                    char szukane[50];
+                    strcpy(szukane, TextToLower(buf_search)); 
+                    
+                    // Sklejamy imię, nazwisko i telefon w jeden string do przeszukania
+                    // i też zamieniamy na małe litery (żeby wpisanie "jan" znalazło "Jan")
+                    const char *caly_tekst = TextFormat("%s %s %s", my_book->data[i].first_name, my_book->data[i].last_name, my_book->data[i].phone);
+                    const char *dane_lower = TextToLower(caly_tekst);
+                    
+                    // Funkcja strstr sprawdza, czy wpisany kawałek występuje w danych
+                    if (strstr(dane_lower, szukane) == NULL) {
+                        continue; // Jeśli nie znaleziono, omijamy ten kontakt!
+                    }
+                }
+
+                // OBLICZANIE POZYCJI (Zauważ, że używamy 'drawn_count' a nie 'i')
+                int currentY = startY + (int)scroll_y + (drawn_count * (cardHeight + spacing));
+                
+                if (currentY + cardHeight < startY) {
+                    drawn_count++;
+                    continue; 
+                }
                 if (currentY > 600) break;
 
+                // --- STARE RYSOWANIE KAFELKA ---
                 Rectangle cardRec = {40, currentY, 720, cardHeight};
                 DrawRectangleRounded(cardRec, 0.2f, 10, cardColor);
                 DrawRectangleRoundedLines(cardRec, 0.2f, 10, LIGHTGRAY); 
 
-                // --- STARE DANE (Lewa strona) ---
                 const char *fullName = TextFormat("%s %s", my_book->data[i].first_name, my_book->data[i].last_name);
                 DrawTextEx(myFont, fullName, (Vector2){60, currentY + 15}, 24, 1, textColor);
 
                 const char *phone = TextFormat("Tel: %s", my_book->data[i].phone);
                 DrawTextEx(myFont, phone, (Vector2){60, currentY + 45}, 18, 1, GRAY);
 
-                // --- NOWE DANE (Prawa strona i dół) ---
                 const char *email = TextFormat("Email: %s", my_book->data[i].email);
                 DrawTextEx(myFont, email, (Vector2){400, currentY + 15}, 18, 1, GRAY);
 
@@ -128,9 +174,14 @@ void start_gui(struct ContactArray *my_book) {
 
                 const char *note = TextFormat("Notatka: %s", my_book->data[i].note);
                 DrawTextEx(myFont, note, (Vector2){60, currentY + 75}, 16, 1, DARKGRAY);
+
+                // TUTAJ WKLEJ SWÓJ PRZYCISK DELETE Z POPRZEDNIEJ ODPOWIEDZI
+                // Rectangle btnDelete = { 660, currentY + 35, 80, 40 }; ... itd.
+
+                drawn_count++; // Zwiększamy liczbę widocznych kontaktów
             }
 
-            EndScissorMode(); // Wyłączenie maskowania
+            EndScissorMode();
         } 
         else if (stan == EKRAN_DODAWANIA) {
             DrawTextEx(myFont, "Dodaj Nowy Kontakt", (Vector2){40, 30}, 36, 1, primaryColor);
