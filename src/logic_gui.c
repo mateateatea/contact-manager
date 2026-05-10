@@ -204,18 +204,20 @@ int contact_delete_gui(struct ContactArray *arr, int index)
     return 1; // Sukces
 }
 
-// Funkcja prywatna tylko dla qsort
 static int comparison_alphabetic(const void *a, const void *b)
 {
     const struct Contact *contactA = (const struct Contact *)a;
     const struct Contact *contactB = (const struct Contact *)b;
 
-    int name_cmp = strcmp(contactA->last_name, contactB->last_name);
+    // Najpierw sortujemy po IMIENIU
+    int name_cmp = strcmp(contactA->first_name, contactB->first_name);
 
+    // Jeśli imiona są identyczne (np. dwóch Janów), sortujemy ich po NAZWISKU
     if (name_cmp == 0)
     {
-        return strcmp(contactA->first_name, contactB->first_name);
+        return strcmp(contactA->last_name, contactB->last_name);
     }
+    
     return name_cmp;
 }
 

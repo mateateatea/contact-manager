@@ -8,7 +8,7 @@
 #include "io.h"
 #include "ui.h"
 #include "validation.h"
-
+#include "logic_gui.h"
 
 int main(){
 
@@ -27,6 +27,7 @@ int main(){
 
     
     contact_load(&my_book, "src/contacts.csv");
+    contact_sort_gui(&my_book);
 
     int working = 1;
 
