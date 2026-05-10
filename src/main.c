@@ -25,6 +25,7 @@ int main(){
         return 1;
     }
 
+    
     contact_load(&my_book, "src/contacts.csv");
 
     int working = 1;

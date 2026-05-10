@@ -150,6 +150,7 @@ char* get_csv_field(char **line_ptr)
 
 void contact_load(struct ContactArray *arr, const char *filename)
 {
+    printf("TO JEST TEST");
     FILE *plik = fopen(filename, "r");
     if (!plik)
     {
