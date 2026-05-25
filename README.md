@@ -40,6 +40,7 @@ Simply navigate to the project directory in your terminal and run:
 make
 
 ![Menu](assets/App_menu.png)
+![Edit](assets/App_new.png)
 ![Edit](assets/App_edit.png)
 
 The project includes standalone unit tests for the input validation module (testing edge cases for names, phone numbers, and emails using assert).
