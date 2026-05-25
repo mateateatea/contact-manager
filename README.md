@@ -16,7 +16,6 @@ An interactive Contact Manager GUI application written in C using the **Raylib**
 
 ## 🏗️ Architecture
 
-The project strictly follows the **MVC (Model-View-Controller)** pattern, separating the user interface from business logic:
 * `main.c` - Entry point, initialization, and memory cleanup.
 * `logic_gui.c` - Business logic, dynamic memory management (`malloc`, `realloc`, `free`), and array manipulation.
 * `ui.c` - Graphical User Interface (Raylib) and event handling.
