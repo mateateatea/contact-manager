@@ -22,6 +22,8 @@ An interactive Contact Manager GUI application written in C using the **Raylib**
 * `validation.c` - Standalone validation logic.
 * `io.c` - File operations (CSV reading/writing).
 
+![Architecture](assets/architecture.png)
+
 ## 💾 Memory Management
 
 The application stores contacts in a dynamic array (`struct ContactArray`). It initializes with a set capacity and automatically doubles its size using `realloc()` when full. Proper cleanup (`free`) is executed before exiting the program to prevent memory leaks.
@@ -37,7 +39,12 @@ To compile and run this project, you need:
 Simply navigate to the project directory in your terminal and run:
 make
 
+![Menu](assets/App_menu.png)
+![Edit](assets/App_edit.png)
+
 The project includes standalone unit tests for the input validation module (testing edge cases for names, phone numbers, and emails using assert).
 To run the unit tests:
 gcc src/test_validation.c src/validation.c -o testy.exe
 ./testy.exe
+
+![unit_test](assets/unit_test.png)
