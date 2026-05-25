@@ -7,7 +7,7 @@
 struct Contact{
     char first_name[50];
     char last_name[50];
-    char phone[10];
+    char phone[13];
     char email[100];
     char address[200];
     char note[500];

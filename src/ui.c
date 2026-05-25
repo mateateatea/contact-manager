@@ -5,6 +5,7 @@
 #include "structs.h"
 #include "logic_gui.h" 
 #include <ctype.h>
+#include "validation.h"
 
 // Rozbudowane stany focusu (dla wszystkich 6 pól)
 typedef enum { EKRAN_LISTY, EKRAN_DODAWANIA, EKRAN_EDYCJI } StanAplikacji;
@@ -35,13 +36,12 @@ void start_gui(struct ContactArray *my_book) {
     char buf_phone[20] = {0};
     char buf_email[50] = {0};
     char buf_city[50] = {0};
-    char buf_note[100] = {0}; // Zrobimy ciut więcej miejsca na notatkę
+    char buf_note[100] = {0}; 
     char error_msg[100] = {0}; 
     int edytowany_indeks = -1;
 
     while (!WindowShouldClose()) {
         
-        // --- LOGIKA WPISYWANIA Z KLAWIATURY ---
         // --- LOGIKA WPISYWANIA Z KLAWIATURY ---
         char *active_buf = NULL;
         size_t max_len = 0;
@@ -308,75 +308,22 @@ void start_gui(struct ContactArray *my_book) {
                     stan = EKRAN_LISTY; 
                 }
                else if (CheckCollisionPointRec(mouse, btnSave)) {
-                    int valid = 1; // Flaga: 1 = wszystko super, 0 = jest błąd
-                    error_msg[0] = '\0'; // Czyścimy poprzednie błędy
+                    int valid = 1;
+                    error_msg[0] = '\0';
 
-                    // --- 1. Walidacja: Imię i Nazwisko (Wymagane, tylko litery/spacje/myślniki) ---
-                    if (strlen(buf_fname) == 0 || strlen(buf_lname) == 0) {
-                        valid = 0; strcpy(error_msg, "Blad: Imie i Nazwisko sa wymagane!");
-                    } else {
-                        // Sprawdzamy imię
-                        for (int j = 0; buf_fname[j] != '\0'; j++) {
-                            char c = buf_fname[j];
-                            // Dopuszczamy litery (isalpha), spacje, myślniki i apostrofy (częste w obcych imionach)
-                            if (!isalpha(c) && c != '-' && c != ' ' && c != '\'') {
-                                valid = 0; strcpy(error_msg, "Blad: Imie moze zawierac tylko litery!"); break;
-                            }
-                        }
-                        // Sprawdzamy nazwisko (tylko jeśli imię przeszło)
-                        for (int j = 0; buf_lname[j] != '\0' && valid; j++) {
-                            char c = buf_lname[j];
-                            if (!isalpha(c) && c != '-' && c != ' ' && c != '\'') {
-                                valid = 0; strcpy(error_msg, "Blad: Nazwisko moze zawierac tylko litery!"); break;
-                            }
-                        }
+                    // Używamy nowych funkcji!
+                    if (!is_name_valid(buf_fname)) {
+                        valid = 0; strcpy(error_msg, "Blad: Imie jest bledne lub puste!");
+                    } else if (!is_name_valid(buf_lname)) {
+                        valid = 0; strcpy(error_msg, "Blad: Nazwisko jest bledne lub puste!");
+                    } else if (!is_phone_valid(buf_phone)) {
+                        valid = 0; strcpy(error_msg, "Blad: Telefon: 9 cyfr lub +48XXXXXXXXX");
+                    } else if (!is_email_valid(buf_email)) {
+                        valid = 0; strcpy(error_msg, "Blad: Niepoprawny format email!");
                     }
 
-                    // --- 2. Walidacja: Telefon (Format 9 cyfr LUB +48 i 9 cyfr) ---
-                    if (valid) {
-                        int len = strlen(buf_phone);
-                        int phone_ok = 1;
-                        
-                        if (len == 9) {
-                            // Musi być 9 samych cyfr
-                            for (int j = 0; j < 9; j++) {
-                                if (!isdigit(buf_phone[j])) phone_ok = 0;
-                            }
-                        } else if (len == 12 && strncmp(buf_phone, "+48", 3) == 0) {
-                            // Musi zaczynać się od +48, a potem 9 cyfr
-                            for (int j = 3; j < 12; j++) {
-                                if (!isdigit(buf_phone[j])) phone_ok = 0;
-                            }
-                        } else {
-                            phone_ok = 0; // Zła długość
-                        }
-
-                        if (!phone_ok) {
-                            valid = 0; strcpy(error_msg, "Blad: Telefon: 9 cyfr lub +48XXXXXXXXX");
-                        }
-                    }
-
-                    // --- 3. Walidacja: Email (Musi mieć @ i domenę, np. .com) ---
-                    // Sprawdzamy tylko, jeśli użytkownik w ogóle coś wpisał w to pole
-                    if (valid && strlen(buf_email) > 0) {
-                        char *at_ptr = strchr(buf_email, '@'); // Szukamy znaku @
-                        
-                        if (at_ptr == NULL || at_ptr == buf_email) {
-                            valid = 0; strcpy(error_msg, "Blad: Email musi zawierac poprawny znak @");
-                        } else {
-                            char *dot_ptr = strchr(at_ptr, '.'); // Kropka musi być PO znaku @
-                            
-                            // Kropka nie może być od razu po @ (np. uzytkownik@.com) ani na samym końcu (np. user@mail.)
-                            if (dot_ptr == NULL || dot_ptr == at_ptr + 1 || *(dot_ptr + 1) == '\0') {
-                                valid = 0; strcpy(error_msg, "Blad: Email musi posiadac domene (np. .pl)");
-                            }
-                        }
-                    }
-
-                    // --- JEŚLI WSZYSTKO PRZESZŁO POMYŚLNIE ---
                     if (valid) {
                         int result = 0;
-                        
                         if (stan == EKRAN_DODAWANIA) {
                             result = contact_add_gui(my_book, buf_fname, buf_lname, buf_phone, buf_email, buf_city, buf_note);
                         } else if (stan == EKRAN_EDYCJI) {
@@ -387,14 +334,12 @@ void start_gui(struct ContactArray *my_book) {
                             contact_sort_gui(my_book);
                             contact_save_gui(my_book, "src/contacts.csv"); 
                             
-                            // Czyszczenie buforów
                             buf_fname[0] = '\0'; buf_lname[0] = '\0'; buf_phone[0] = '\0';
                             buf_email[0] = '\0'; buf_city[0]  = '\0'; buf_note[0]  = '\0';
                             error_msg[0] = '\0';
-                            
                             stan = EKRAN_LISTY; 
                         } else {
-                            strcpy(error_msg, "Blad: Nie udalo sie zapisac kontaktu do pamieci.");
+                            strcpy(error_msg, "Blad: Nie udalo sie zapisac.");
                         }
                     }
                 }

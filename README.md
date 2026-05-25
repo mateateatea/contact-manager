@@ -1,214 +1,44 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/SsQoxpni)
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=23167454&assignment_repo_type=AssignmentRepo)
----
+# Contact Manager
 
-# 🧠 Semester Project – C Programming
+An interactive Contact Manager GUI application written in C using the **Raylib** library. This project was developed as part of the Low-level Programming course (2025/2026) and demonstrates modular architecture, dynamic memory management, file I/O, and input validation.
 
-[🇵🇱 Polski](README.pl.md) | 🇬🇧 English
+## 🚀 Features
 
-Project description in English goes here.
+* **Add / Edit / Delete Contacts:** Full CRUD functionality with a graphical user interface.
+* **Smart Sorting:** Contacts are automatically sorted alphabetically by first name.
+* **Search Functionality:** Quickly filter contacts by first name, last name, or phone number.
+* **Persistent Storage:** Data is automatically loaded from and saved to a `contacts.csv` file upon application startup and exit.
+* **Robust Input Validation:**
+  * Mandatory fields (first/last name) allow only letters, spaces, hyphens, and apostrophes.
+  * Phone numbers must follow the `+48XXXXXXXXX` or `9-digit` format.
+  * Email addresses must contain `@` and a valid domain.
+* **Security:** Built-in buffer overflow protection enforcing input length limits (`strncpy` safe copies).
 
-# Project Title: [Title, e.g., "Interactive Checkers in C"]
+## 🏗️ Architecture
 
----
+The project strictly follows the **MVC (Model-View-Controller)** pattern, separating the user interface from business logic:
+* `main.c` - Entry point, initialization, and memory cleanup.
+* `logic_gui.c` - Business logic, dynamic memory management (`malloc`, `realloc`, `free`), and array manipulation.
+* `ui.c` - Graphical User Interface (Raylib) and event handling.
+* `validation.c` - Standalone validation logic.
+* `io.c` - File operations (CSV reading/writing).
 
-## 🧩 Project Topic
+## 💾 Memory Management
 
-The project should align with the course scope. Example categories include:
+The application stores contacts in a dynamic array (`struct ContactArray`). It initializes with a set capacity and automatically doubles its size using `realloc()` when full. Proper cleanup (`free`) is executed before exiting the program to prevent memory leaks.
 
-- 🎮 games (e.g., Snake, 2048, Connect Four)
-- 🗂 system applications (file manager, resource monitor)
-- 📊 data processing applications
-- ⚙️ embedded / sensor-based systems
+## 🛠️ Prerequisites & Building
 
-👉 The final topic must be approved by the instructor.
+To compile and run this project, you need:
+* **GCC Compiler** (e.g., via MSYS2/MinGW on Windows)
+* **Make**
+* **Raylib** library (included in the `raylib/` directory)
 
----
+### Compilation
+Simply navigate to the project directory in your terminal and run:
+make
 
-## 📌 General Information
-
-- **Course:** Low-Level Programming in C  
-- **Instructor:** Dr. Eng. Serhii Baraban  
-- **Academic Year:** 2025/2026  
-- **Format:** Individual or pair project  
-
----
-
-## Project Description:
-An interactive, low-level programming project implemented entirely in C, featuring modular architecture, dynamic memory management, robust error handling, and a graphical user interface (GUI). This project complies with the specific academic requirements for a grade of 5.0, including structured and clear coding practices, effective use of pointers, structures, dynamic data structures, and file-based operations.
-
-## Project Timeline:
-- **Start Date:** March 17, 2026  
-- **End Date:** June 15, 2026
-
----
-
-## 🏗️ Functional Requirements
-
-The project should:
-
-- provide user interaction (keyboard or GUI)
-- validate input data
-- handle errors robustly
-- support saving and loading data from files
-
----
-
-## 💾 File Operations
-
-The program must implement:
-
-- saving application/game state
-- logging or configuration files
-- reading data from files
-
----
-
-## 🧠 Project Architecture
-
-The code should be modular and organized into components:
-
-- `main.c` – entry point
-- `logic.c` – core logic
-- `io.c` – file operations
-- `ui.c` – user interface
-
-Required elements:
-
-- structures (`struct`)
-- pointers
-- dynamic memory allocation
-- well-structured, readable functions
-
----
-
-## Milestones:
-
-### 🚩 Milestone 1: Initial Project Setup & Modular Structure
-**Due Date:** April 07, 2026
-- [ ] Define detailed project specification and functional requirements (#Issue 1)
-- [ ] Set up repository structure and initial modular framework in C (#Issue 2)
-- [ ] Configure Makefile and compilation settings (#Issue 3)
-- [ ] Design and implement initial data structures (structs, pointers) (#Issue 4)
-
-### 🚩 Milestone 2: Core Game Logic & File Handling
-**Due Date:** May 05, 2026
-- [ ] Implement the main game logic (move validation, game rules enforcement) (#Issue 5)
-- [ ] Integrate dynamic memory management (linked lists, dynamic arrays, trees) for game state handling (#Issue 6)
-- [ ] Develop file operations for game states, logs, and player statistics (saving/loading mechanisms) (#Issue 7)
-- [ ] Perform rigorous debugging, memory-leak checking (valgrind), and preliminary testing (#Issue 8)
-
-### 🚩 Milestone 3: GUI Development & Enhanced User Interaction
-**Due Date:** June 11, 2026
-- [ ] Implement graphical user interface using libraries like Allegro, SFML, or SDL (#Issue 9)
-- [ ] Introduce cursor-based interaction and graphical constraints on valid moves (#Issue 10)
-- [ ] Comprehensive error handling (input validation, memory safety, exception handling) (#Issue 11)
-- [ ] Integration, functional, and usability testing of GUI and core gameplay mechanics (#Issue 12)
-
-### 🚩 Final Submission
-**Due Date:** June 15, 2026
-- [ ] Refactor, finalize codebase for readability, maintainability, and efficiency (#Issue 13)
-- [ ] Finalize documentation, commenting, and README updates (#Issue 14)
-- [ ] Project submission via ekursy platform (#Issue 15)
-
----
-
-## Repository Structure:
-```
-your_project/
-├── assets/
-│   └── images/
-├── docs/
-│   ├── project_specification.md
-│   └── user_manual.md
-├── include/
-│   ├── game_logic.h
-│   ├── gui.h
-│   └── file_operations.h
-├── src/
-│   ├── game_logic.c
-│   ├── gui.c
-│   ├── file_operations.c
-│   └── main.c
-├── logs/
-├── saves/
-├── tests/
-│   ├── test_logic.c
-│   └── test_gui.c
-├── Makefile
-├── .gitignore
-└── README.md
-```
-
----
-
-## GitHub Issues Template:
-Clearly defined issues for efficient project tracking:
-
-1. Specification and Requirements Documentation
-2. Repository and Modular Architecture Setup
-3. Makefile and Compilation Configuration
-4. Initial Dynamic Structures (e.g., structs, pointers)
-5. Implementation of Game Logic and Rule Enforcement
-6. Dynamic Data Structures for Game State Management
-7. File Operations (Saving/Loading, Logging)
-8. Debugging and Memory Management Validation (valgrind)
-9. GUI Implementation using Allegro/SFML/SDL
-10. Cursor and Gameplay Interaction Improvements
-11. Robust Error Handling and Input Validation
-12. GUI and Core Integration Tests
-13. Final Code Refactoring and Optimization
-14. Final Documentation and README Preparation
-15. Submission 
-
----
-
-## Technical and Academic Compliance:
-This project explicitly aligns with requirements for obtaining a 5.0 grade:
-
-- **Logical modularity** for ease of maintenance and scalability.
-- **Advanced use of pointers and dynamic structures** to manage memory explicitly and efficiently.
-- **Robust file-based functionality** to store game state and logs.
-- **Comprehensive GUI** ensuring intuitive, interactive gameplay.
-- **Detailed error handling** to produce resilient, secure software.
-
----
-
-## Development and Contribution Guidelines:
-- Clear and descriptive variable/function naming for readability.
-- Modular implementation: each C file represents a specific module.
-- Regular commits and pull requests, referencing specific issues (e.g., `#3 Modular architecture implemented`).
-- Thorough documentation and inline comments.
-
----
-
-## 🧪 Testing
-
-The project should include:
-
-- test scenarios
-- manual testing
-- handling of edge/error cases
-
----
-
-## 📚 Documentation
-
-Located in the `docs/` directory:
-
-- `project_description.md`
-- `architecture.md`
-- `user_manual.md`
-
----
-
-## 🐛 Project Management
-
-Required:
-
-- use of GitHub Issues
-- task decomposition
-- meaningful commit messages
-
----
-
+The project includes standalone unit tests for the input validation module (testing edge cases for names, phone numbers, and emails using assert).
+To run the unit tests:
+gcc src/test_validation.c src/validation.c -o testy.exe
+./testy.exe
