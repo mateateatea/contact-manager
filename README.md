@@ -49,3 +49,7 @@ gcc src/test_validation.c src/validation.c -o testy.exe
 ./testy.exe
 
 ![unit_test](assets/unit_test.png)
+
+## Contributors
+- **Mateusz Piaskowski** (@mateateatea) - Specification Documentation, Modular Architecture Setup, Compilation Configuration, Initial Dynamic Structures, GUI implementation, Unit tests
+- **Łukasz SŁawecki** (@lukaszslawecki23) - Implement the main logic, Application memory management, Comprehensive error handling, Implementation command version of application for Linux
